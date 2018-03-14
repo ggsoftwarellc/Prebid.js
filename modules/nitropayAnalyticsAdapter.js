@@ -61,7 +61,7 @@ function trackEmpty(auctionId) {
       cpm: 0,
     };
     const wb = encodeURIComponent(btoa(JSON.stringify(adInfo)));
-    ajax(`${url}?s=${options.siteId}&wb=${wb}`);
+    ajax(`${url}?s=${options.siteId}&wb=${wb}&f=1`);
   }
 }
 
