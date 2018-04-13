@@ -7,23 +7,14 @@ const url = 'https://tracker.nitropay.com/pbanalytics';
 const analyticsType = 'endpoint';
 let options = { siteId: 0 };
 
-let auctions = {};
-let lastAuctionId;
-
 let nitropayAdapter = Object.assign(adapter({ url, analyticsType }), {
   track({ eventType, args }) {
-    let auctionId = null;
-    if (args) {
-      auctionId = args.auctionId ? args.auctionId : args.requestId;
-    } else {
-      auctionId = lastAuctionId;
-    }
+    let auctionId = args.auctionId;
 
     switch (eventType) {
       case CONSTANTS.EVENTS.AUCTION_INIT:
         // console.log(`init: ${auctionId}`);
-        lastAuctionId = auctionId;
-        auctions[auctionId] = {
+        nitropayAdapter.context.auctions[auctionId] = {
           adUnits: []
         };
         break;
@@ -31,8 +22,8 @@ let nitropayAdapter = Object.assign(adapter({ url, analyticsType }), {
       case CONSTANTS.EVENTS.BID_REQUESTED:
         // console.log(`bid requested: ${auctionId}`);
         for (let bid of args.bids) {
-          if (!auctions[auctionId].adUnits.includes(bid.placementCode)) {
-            auctions[auctionId].adUnits.push(bid.placementCode);
+          if (!nitropayAdapter.context.auctions[auctionId].adUnits.includes(bid.adUnitCode)) {
+            nitropayAdapter.context.auctions[auctionId].adUnits.push(bid.adUnitCode);
           }
         }
         break;
@@ -52,8 +43,7 @@ let nitropayAdapter = Object.assign(adapter({ url, analyticsType }), {
 
 function trackEmpty(auctionId) {
   // console.log(`trackEmpty: ${auctionId}`);
-
-  for (let adUnit of auctions[auctionId].adUnits) {
+  for (let adUnit of nitropayAdapter.context.auctions[auctionId].adUnits) {
     let adInfo = {
       adUnitCode: adUnit,
       bidder: 'blank',
@@ -66,10 +56,10 @@ function trackEmpty(auctionId) {
 }
 
 function trackBidWon(args) {
-  let auctionId = args.auctionId ? args.auctionId : args.requestId;
+  let auctionId = args.auctionId;
 
   // remove from list of pending ad units for the auction
-  auctions[auctionId].adUnits = auctions[auctionId].adUnits.filter(a => a != args.adUnitCode);
+  nitropayAdapter.context.auctions[auctionId].adUnits = nitropayAdapter.context.auctions[auctionId].adUnits.filter(a => a != args.adUnitCode);
 
   let adInfo = {
     adUnitCode: args.adUnitCode,
@@ -87,6 +77,11 @@ nitropayAdapter.originEnableAnalytics = nitropayAdapter.enableAnalytics;
 // override enableAnalytics so we can get access to the config passed in from the page
 nitropayAdapter.enableAnalytics = function (config) {
   options = config.options;
+
+  nitropayAdapter.context = {
+    auctions: {},
+  };
+
   nitropayAdapter.originEnableAnalytics(config); // call the base class function
 };
 
