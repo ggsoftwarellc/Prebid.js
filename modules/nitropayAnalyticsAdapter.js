@@ -30,7 +30,9 @@ let nitropayAdapter = Object.assign(adapter({ url, analyticsType }), {
 
       case CONSTANTS.EVENTS.AUCTION_END:
         // console.log(`end: ${auctionId}`);
-        setTimeout(trackEmpty, 1000, auctionId);
+        setTimeout(() => {
+          trackEmpty(auctionId);
+        }, 1000);
         break;
 
       case CONSTANTS.EVENTS.BID_WON:
