@@ -68,6 +68,7 @@ function trackBidWon(args) {
     bidder: args.bidder,
     timeToRespond: Number(args.timeToRespond),
     cpm: Number(args.cpm),
+    creativeId: String(args.adId),
   };
   const wb = encodeURIComponent(btoa(JSON.stringify(adInfo)));
   ajax(`${url}?s=${options.siteId}&wb=${wb}`);
