@@ -108,32 +108,32 @@ module.exports = {
         }
       })
     ],
-    splitChunks: {
-      chunks: 'initial',
-      minChunks: 1,
-      minSize: 0,
-      cacheGroups: (() => {
-        const libRoot = path.resolve(__dirname, 'libraries');
-        const libraries = Object.fromEntries(
-          fs.readdirSync(libRoot)
-            .filter((f) => fs.lstatSync(path.resolve(libRoot, f)).isDirectory())
-            .map(lib => {
-              const dir = path.resolve(libRoot, lib)
-              const def = {
-                name: lib,
-                test: (module) => {
-                  return module.resource && module.resource.startsWith(dir)
-                }
-              }
-              return [lib, def];
-            })
-        );
-        return Object.assign(libraries, {
-          default: false,
-          defaultVendors: false
-        })
-      })()
-    }
+    // splitChunks: {
+    //   chunks: 'initial',
+    //   minChunks: 1,
+    //   minSize: 0,
+    //   cacheGroups: (() => {
+    //     const libRoot = path.resolve(__dirname, 'libraries');
+    //     const libraries = Object.fromEntries(
+    //       fs.readdirSync(libRoot)
+    //         .filter((f) => fs.lstatSync(path.resolve(libRoot, f)).isDirectory())
+    //         .map(lib => {
+    //           const dir = path.resolve(libRoot, lib)
+    //           const def = {
+    //             name: lib,
+    //             test: (module) => {
+    //               return module.resource && module.resource.startsWith(dir)
+    //             }
+    //           }
+    //           return [lib, def];
+    //         })
+    //     );
+    //     return Object.assign(libraries, {
+    //       default: false,
+    //       defaultVendors: false
+    //     })
+    //   })()
+    // }
   },
   plugins
 };

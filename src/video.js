@@ -1,5 +1,4 @@
-import {deepAccess, logError} from './utils.js';
-import {config} from '../src/config.js';
+import {deepAccess} from './utils.js';
 import {hook} from './hook.js';
 import {auctionManager} from './auctionManager.js';
 
@@ -42,13 +41,13 @@ export function isValidVideoBid(bid, {index = auctionManager.index} = {}) {
 export const checkVideoBidSetup = hook('sync', function(bid, adUnit, videoMediaType, context, useCacheKey) {
   if (videoMediaType && (useCacheKey || context !== OUTSTREAM)) {
     // xml-only video bids require a prebid cache url
-    if (!config.getConfig('cache.url') && bid.vastXml && !bid.vastUrl) {
-      logError(`
-        This bid contains only vastXml and will not work when a prebid cache url is not specified.
-        Try enabling prebid cache with $$PREBID_GLOBAL$$.setConfig({ cache: {url: "..."} });
-      `);
-      return false;
-    }
+    // if (!config.getConfig('cache.url') && bid.vastXml && !bid.vastUrl) {
+    //   logError(`
+    //     This bid contains only vastXml and will not work when a prebid cache url is not specified.
+    //     Try enabling prebid cache with $$PREBID_GLOBAL$$.setConfig({ cache: {url: "..."} });
+    //   `);
+    //   return false;
+    // }
 
     return !!(bid.vastUrl || bid.vastXml);
   }
