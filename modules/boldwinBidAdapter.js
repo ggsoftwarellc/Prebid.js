@@ -5,7 +5,7 @@ import { convertOrtbRequestToProprietaryNative } from '../src/native.js';
 
 const BIDDER_CODE = 'boldwin';
 const AD_URL = 'https://ssp.videowalldirect.com/pbjs';
-const SYNC_URL = 'https://cs.videowalldirect.com'
+const SYNC_URL = 'https://sync.videowalldirect.com';
 
 function isBidResponseValid(bid) {
   if (!bid.requestId || !bid.cpm || !bid.creativeId ||
@@ -110,6 +110,7 @@ export const spec = {
           placement.protocols = mediaTypes[VIDEO].protocols;
           placement.startdelay = mediaTypes[VIDEO].startdelay;
           placement.placement = mediaTypes[VIDEO].placement;
+          placement.plcmt = mediaTypes[VIDEO].plcmt;
           placement.skip = mediaTypes[VIDEO].skip;
           placement.skipafter = mediaTypes[VIDEO].skipafter;
           placement.minbitrate = mediaTypes[VIDEO].minbitrate;

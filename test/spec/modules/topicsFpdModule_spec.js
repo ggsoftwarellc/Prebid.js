@@ -360,9 +360,21 @@ describe('topics', () => {
           }]]
         );
         storage.setDataInLocalStorage(topicStorageName, storedSegments);
+        config.setConfig({
+          userSync: {
+            topics: {
+              maxTopicCaller: 4,
+              bidders: [{
+                bidder: 'pubmatic',
+                iframeURL: 'https://ads.pubmatic.com/AdServer/js/topics/topics_frame.html'
+              }]
+            }
+          }
+        })
       });
       afterEach(() => {
         sandbox.restore();
+        config.resetConfig();
       });
 
       it('should return segments for bidder if transmitUfpd is allowed', () => {
@@ -384,6 +396,22 @@ describe('topics', () => {
     });
 
     describe('cross-frame messages', () => {
+      before(() => {
+        config.setConfig({
+          userSync: {
+            topics: {
+              maxTopicCaller: 3,
+              bidders: [
+                {
+                  bidder: 'pubmatic',
+                  iframeURL: 'https://ads.pubmatic.com/AdServer/js/topics/topics_frame.html'
+                }
+              ],
+            },
+          }
+        });
+      });
+
       beforeEach(() => {
         // init iframe logic so  that the receiveMessage origin check passes
         loadTopicsForBidders({
@@ -397,6 +425,10 @@ describe('topics', () => {
           }
         });
       });
+
+      after(() => {
+        config.resetConfig();
+      })
 
       it('should store segments if receiveMessage event is triggered with segment data', () => {
         receiveMessage(evt);
@@ -421,11 +453,13 @@ describe('handles fetch request for topics api headers', () => {
 
   beforeEach(() => {
     stubbedFetch = sinon.stub(window, 'fetch');
+    reset();
   });
 
   afterEach(() => {
     stubbedFetch.restore();
     storage.removeDataFromLocalStorage(topicStorageName);
+    config.resetConfig();
   });
 
   it('should make a fetch call when a fetchUrl is present for a selected bidder', () => {
@@ -444,6 +478,7 @@ describe('handles fetch request for topics api headers', () => {
     });
 
     stubbedFetch.returns(Promise.resolve(true));
+
     loadTopicsForBidders({
       browsingTopics: true,
       featurePolicy: {
